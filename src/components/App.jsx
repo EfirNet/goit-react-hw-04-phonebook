@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
@@ -9,6 +9,22 @@ import { Wrapper, Title, SubTitle } from './App.styled';
 export const App = () => {
   const [contacts, setContacts] = useState(ContactsDemo);
   const [filter, setFilter] = useState('');
+
+  const firstRender = useRef(true);
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem('Phonebook'));
+    if (items && items.length) {
+      setContacts(items);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!firstRender.current) {
+      localStorage.setItem('Phonebook', JSON.stringify(contacts));
+      return;
+    }
+    firstRender.current = false;
+  }, [contacts]);
 
   const addContact = data => {
     const { name, number } = data;
