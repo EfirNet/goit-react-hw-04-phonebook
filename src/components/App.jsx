@@ -3,27 +3,31 @@ import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
-import ContactsDemo from './contactDemo.json';
+// import ContactsDemo from './contactDemo.json';
 import { Wrapper, Title, SubTitle } from './App.styled';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(ContactsDemo);
+  const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
 
   const firstRender = useRef(true);
-  useEffect(() => {
-    const items = JSON.parse(localStorage.getItem('Phonebook'));
-    if (items && items.length) {
-      setContacts(items);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const items = JSON.parse(localStorage.getItem('Phonebook'));
+  //   if (items?.length) {
+  //     setContacts(items);
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (!firstRender.current) {
       localStorage.setItem('Phonebook', JSON.stringify(contacts));
-      return;
+    } else {
+      const items = JSON.parse(localStorage.getItem('Phonebook'));
+      if (items?.length) {
+        setContacts(items);
+      }
+      firstRender.current = false;
     }
-    firstRender.current = false;
   }, [contacts]);
 
   const addContact = data => {
@@ -66,12 +70,17 @@ export const App = () => {
 
   const filteredContacts = getFilteredContacts();
   return (
-    <Wrapper>
-      <Title>Phonebook</Title>
-      <ContactForm onSubmit={addContact} />
-      <SubTitle>Contacts</SubTitle>
-      <Filter handleFilter={handleFilter} />
-      <ContactList contacts={filteredContacts} removeContact={removeContact} />
-    </Wrapper>
+    <>
+      <Wrapper>
+        <Title>Phonebook</Title>
+        <ContactForm onSubmit={addContact} />
+        <SubTitle>Contacts</SubTitle>
+        <Filter handleFilter={handleFilter} />
+        <ContactList
+          contacts={filteredContacts}
+          removeContact={removeContact}
+        />
+      </Wrapper>
+    </>
   );
 };
